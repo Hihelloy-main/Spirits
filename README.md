@@ -63,7 +63,7 @@ Below are a list of changes that set this branch apart from its master.
       <dependency>
           <groupId>com.github.Hihelloy-main</groupId>
           <artifactId>Spirits</artifactId>
-          <version>043e18664d</version>
+          <version>v1.1.4</version>
           <scope>provided</scope>
       </dependency>
 ```
