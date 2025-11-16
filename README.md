@@ -1,6 +1,6 @@
 ![Spirits](https://i.imgur.com/5UgocDY.jpg)
 # 
-This branch is a separately updated version of Spirits for the MysticEmpire server.
+This branch is a separately updated version of Spirits for Folia/Spigot/Paper newer servers.
 
 # Changes
 Below are a list of changes that set this branch apart from its master.
@@ -47,3 +47,12 @@ Below are a list of changes that set this branch apart from its master.
 - Simplified the `playSpiritParticles` methods and made them work together; changed parameters from `float` to `double`.
 - Changed the `setSpiritDescriptionColor` to `getSpiritColor` for simplicity.
 - Removed the `generalChekcs` method and replaced it with the `Removal` class.
+#### API
+```
+      <dependency>
+          <groupId>com.github.Hihelloy-main</groupId>
+          <artifactId>Spirits</artifactId>
+          <version>043e18664d</version>
+          <scope>provided</scope>
+      </dependency>
+```
