@@ -1,5 +1,7 @@
 package me.numin.spirits;
 
+import com.cjcrafter.foliascheduler.FoliaCompatibility;
+import com.cjcrafter.foliascheduler.ServerImplementation;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.util.CollisionInitializer;
@@ -23,10 +25,12 @@ public final class Spirits extends JavaPlugin {
     public static boolean paper;
     public static boolean luminol;
     public static boolean spigot;
+    public static ServerImplementation scheduler;
 
     @Override
     public void onEnable() {
         plugin = this;
+        scheduler = new FoliaCompatibility(plugin).getServerImplementation();
 
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");

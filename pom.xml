@@ -6,7 +6,7 @@
 
     <groupId>me.numin</groupId>
     <artifactId>spirits</artifactId>
-    <version>1.1.3</version>
+    <version>1.1.4</version>
     <packaging>jar</packaging>
 
     <name>Spirits</name>
@@ -72,6 +72,11 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.cjcrafter</groupId>
+            <artifactId>foliascheduler</artifactId>
+            <version>0.7.2</version>
+        </dependency>
         <dependency>
             <groupId>dev.folia</groupId>
             <artifactId>folia-api</artifactId>

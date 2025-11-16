@@ -146,7 +146,7 @@ public class PKEvents implements Listener {
                 }
             }, 1L);
         } else {
-            Bukkit.getGlobalRegionScheduler().runDelayed(Spirits.plugin, (task) -> {
+            Spirits.scheduler.global().runDelayed(() -> {
                 try {
                     Spirits.plugin.getConfig().load(new File(Spirits.plugin.getDataFolder(), "config.yml"));
                     HandlerList.unregisterAll(Spirits.plugin);
@@ -191,7 +191,7 @@ public class PKEvents implements Listener {
                 }
             });
         } else {
-            Bukkit.getAsyncScheduler().runNow(Spirits.plugin, (task) -> {
+            Spirits.scheduler.async().runNow(() -> {
                 try {
                     DBConnection.sql.getConnection().setAutoCommit(false);
                     DBConnection.sql.getConnection().commit(); //Force the existing async stuff to commit
