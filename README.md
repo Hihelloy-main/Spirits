@@ -48,13 +48,16 @@ Below are a list of changes that set this branch apart from its master.
 - Changed the `setSpiritDescriptionColor` to `getSpiritColor` for simplicity.
 - Removed the `generalChekcs` method and replaced it with the `Removal` class.
 #### API
-**The Spirits plugin has its own API for access to the elements (Spirit, LightSpirit, and DarkSpirit) for their own moves!
+**The Spirits plugin has its own API for access to the elements (Spirit, LightSpirit, and DarkSpirit) for their own moves!**
+**Repository:**
 ```
       <repository>
           <id>jitpack.io</id>
           <url>https://jitpack.io</url>
       </repository>
-
+```
+**Dependency:**
+```
       <dependency>
           <groupId>com.github.Hihelloy-main</groupId>
           <artifactId>Spirits</artifactId>
