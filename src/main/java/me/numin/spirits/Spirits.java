@@ -19,10 +19,33 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Spirits extends JavaPlugin {
 
     public static Spirits plugin;
+    public static boolean isFolia;
+    public static boolean paper;
+    public static boolean luminol;
+    public static boolean spigot;
 
     @Override
     public void onEnable() {
         plugin = this;
+
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            isFolia = true;
+        } catch (ClassNotFoundException ignored) {}
+
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig");
+            paper = true;
+        } catch (ClassNotFoundException ignored) {}
+
+        try {
+            Class.forName("me.earthme.luminol.api.ThreadedRegion");
+            luminol = true;
+        } catch (ClassNotFoundException ignored) {}
+
+        if (!isFolia && !paper && !luminol) {
+            spigot = true;
+        }
 
         getLogger().info("Init config");
         new Config(this);
@@ -63,5 +86,21 @@ public final class Spirits extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Abilities(), this);
         getServer().getPluginManager().registerEvents(new Passives(), this);
         getServer().getPluginManager().registerEvents(new PKEvents(), this);
+    }
+
+    public static boolean isFolia() {
+        return isFolia;
+    }
+
+    public static boolean isSpigot() {
+        return spigot;
+    }
+
+    public static boolean isPaper() {
+        return paper;
+    }
+
+    public static boolean isLuminol() {
+        return luminol;
     }
 }

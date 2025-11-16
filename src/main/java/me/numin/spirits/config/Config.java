@@ -225,6 +225,7 @@ public class Config {
         config.addDefault("Abilities.Spirits.DarkSpirit.Strike.Damage", 3);
         config.addDefault("Abilities.Spirits.DarkSpirit.Strike.Radius", 1);
 
+
         //COMBOS
 
         config.addDefault("Abilities.Spirits.LightSpirit.Combo.Rejuvenate.Enabled", true);

@@ -1,7 +1,8 @@
 name: Spirits
 version: ${project.version}
+folia-supported: true
 main: me.numin.spirits.Spirits
-api-version: 1.16
+api-version: 1.16.5
 depend: [ProjectKorra]
 softdepend: [PlaceholderAPI]
 authors: [Numin, StrangeOne101]

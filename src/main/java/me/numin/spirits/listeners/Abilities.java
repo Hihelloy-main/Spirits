@@ -1,13 +1,16 @@
 package me.numin.spirits.listeners;
 
 import com.projectkorra.projectkorra.ability.CoreAbility;
-import me.numin.spirits.ability.dark.DarkBlast;
+import me.numin.spirits.ability.dark.*;
 import me.numin.spirits.ability.light.LightBlast;
 import me.numin.spirits.ability.spirit.*;
 import me.numin.spirits.utilities.TempSpectator;
+import org.bukkit.Sound;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -17,9 +20,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 
-import me.numin.spirits.ability.dark.Intoxicate;
-import me.numin.spirits.ability.dark.Shackle;
-import me.numin.spirits.ability.dark.Strike;
 import me.numin.spirits.ability.light.Alleviate;
 import me.numin.spirits.ability.light.Orb;
 import me.numin.spirits.ability.light.Shelter;
@@ -65,6 +65,7 @@ public class Abilities implements Listener {
     public void onSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+        String abil = bPlayer.getBoundAbilityName();
 
         if (event.isCancelled() || bPlayer == null) return;
 
@@ -94,6 +95,8 @@ public class Abilities implements Listener {
 
         }
     }
+
+
 
     @EventHandler
     public void onExplode(EntityExplodeEvent event) {

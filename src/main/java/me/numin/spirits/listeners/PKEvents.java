@@ -1,22 +1,20 @@
 package me.numin.spirits.listeners;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.PKListener;
+import com.projectkorra.projectkorra.*;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
-import com.projectkorra.projectkorra.event.BendingPlayerCreationEvent;
+import com.projectkorra.projectkorra.event.BendingPlayerLoadEvent;
 import com.projectkorra.projectkorra.event.BendingReloadEvent;
 import com.projectkorra.projectkorra.event.PlayerChangeElementEvent.Result;
 import com.projectkorra.projectkorra.event.PlayerChangeElementEvent;
 import com.projectkorra.projectkorra.storage.DBConnection;
+import commonslang3.projectkorra.lang3.StringUtils;
 import me.numin.spirits.Spirits;
 import me.numin.spirits.utilities.Methods;
 import me.numin.spirits.SpiritElement;
 
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +23,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.RegisteredListener;
+import org.bukkit.util.Consumer;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +83,7 @@ public class PKEvents implements Listener {
             BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(event.getTarget());
             bPlayer.getElements().remove(SpiritElement.NEUTRAL);
             String s = Spirits.getInstance().getConfig().getString("Language.Errors.ChooseSpirit");
-            if (!StringUtils.isEmpty(s)) GeneralMethods.sendBrandingMessage(event.getTarget(), s);
+            if (!StringUtils.isEmpty(s)) GeneralMethods.sendBrandingMessage((CommandSender) event.getTarget(), s);
             saveElements(bPlayer);
         }
     }
@@ -132,24 +131,40 @@ public class PKEvents implements Listener {
 
     @EventHandler
     public void onPKReload(BendingReloadEvent event) {
-        Bukkit.getScheduler().runTaskLater(Spirits.plugin, () -> {
-            try {
-                Spirits.plugin.getConfig().load(new File(Spirits.plugin.getDataFolder(), "config.yml"));
-                HandlerList.unregisterAll(Spirits.plugin);
-                Bukkit.getPluginManager().registerEvents(new Abilities(), Spirits.plugin);
-                Bukkit.getPluginManager().registerEvents(new Passives(), Spirits.plugin);
-                Bukkit.getPluginManager().registerEvents(new PKEvents(), Spirits.plugin);
-                event.getSender().sendMessage(ChatColor.BLUE + "Reloaded Spirits v" + Spirits.plugin.getDescription().getVersion() + "!");
-            } catch (IOException | InvalidConfigurationException e) {
-                e.printStackTrace();
-                event.getSender().sendMessage(ChatColor.RED + "Failed to load the Spirits config: " + e.getLocalizedMessage());
-            }
-        }, 1L);
+        if (!Spirits.isFolia()) {
+            Bukkit.getScheduler().runTaskLater(Spirits.plugin, () -> {
+                try {
+                    Spirits.plugin.getConfig().load(new File(Spirits.plugin.getDataFolder(), "config.yml"));
+                    HandlerList.unregisterAll(Spirits.plugin);
+                    Bukkit.getPluginManager().registerEvents(new Abilities(), Spirits.plugin);
+                    Bukkit.getPluginManager().registerEvents(new Passives(), Spirits.plugin);
+                    Bukkit.getPluginManager().registerEvents(new PKEvents(), Spirits.plugin);
+                    event.getSender().sendMessage(ChatColor.BLUE + "Reloaded Spirits v" + Spirits.plugin.getDescription().getVersion() + "!");
+                } catch (IOException | InvalidConfigurationException e) {
+                    e.printStackTrace();
+                    event.getSender().sendMessage(ChatColor.RED + "Failed to load the Spirits config: " + e.getLocalizedMessage());
+                }
+            }, 1L);
+        } else {
+            Bukkit.getGlobalRegionScheduler().runDelayed(Spirits.plugin, (task) -> {
+                try {
+                    Spirits.plugin.getConfig().load(new File(Spirits.plugin.getDataFolder(), "config.yml"));
+                    HandlerList.unregisterAll(Spirits.plugin);
+                    Bukkit.getPluginManager().registerEvents(new Abilities(), Spirits.plugin);
+                    Bukkit.getPluginManager().registerEvents(new Passives(), Spirits.plugin);
+                    Bukkit.getPluginManager().registerEvents(new PKEvents(), Spirits.plugin);
+                    event.getSender().sendMessage(ChatColor.BLUE + "Reloaded Spirits v" + Spirits.plugin.getDescription().getVersion() + "!");
+                } catch (IOException | InvalidConfigurationException e) {
+                    e.printStackTrace();
+                    event.getSender().sendMessage(ChatColor.RED + "Failed to load the Spirits config: " + e.getLocalizedMessage());
+                }
+            }, 1L);
+        }
     }
 
     @EventHandler
-    public void onBendingPlayerLoad(BendingPlayerCreationEvent event) {
-        BendingPlayer bPlayer = event.getBendingPlayer();
+    public void onBendingPlayerLoad(BendingPlayerLoadEvent event) {
+        OfflineBendingPlayer bPlayer = event.getBendingPlayer();
         if (bPlayer.hasElement(SpiritElement.LIGHT) || bPlayer.hasElement(SpiritElement.DARK)) {
             if (!bPlayer.hasElement(SpiritElement.NEUTRAL)) {
                 bPlayer.getElements().add(SpiritElement.NEUTRAL);
@@ -162,17 +177,31 @@ public class PKEvents implements Listener {
      * Forcefully saves elements this instant. Makes the database commit
      * @param bPlayer The bending player
      */
-    private void saveElements(BendingPlayer bPlayer) {
-        Bukkit.getScheduler().runTaskAsynchronously(Spirits.plugin, () -> {
-            try {
-                DBConnection.sql.getConnection().setAutoCommit(false);
-                DBConnection.sql.getConnection().commit(); //Force the existing async stuff to commit
-                bPlayer.saveElements();
-                DBConnection.sql.getConnection().commit(); //Commit our element change
-                DBConnection.sql.getConnection().setAutoCommit(true); //Turn autosync back on
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+    private void saveElements(OfflineBendingPlayer bPlayer) {
+        if (!Spirits.isFolia()) {
+            Bukkit.getScheduler().runTaskAsynchronously(Spirits.plugin, () -> {
+                try {
+                    DBConnection.sql.getConnection().setAutoCommit(false);
+                    DBConnection.sql.getConnection().commit(); //Force the existing async stuff to commit
+                    bPlayer.saveElements();
+                    DBConnection.sql.getConnection().commit(); //Commit our element change
+                    DBConnection.sql.getConnection().setAutoCommit(true); //Turn autosync back on
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            Bukkit.getAsyncScheduler().runNow(Spirits.plugin, (task) -> {
+                try {
+                    DBConnection.sql.getConnection().setAutoCommit(false);
+                    DBConnection.sql.getConnection().commit(); //Force the existing async stuff to commit
+                    bPlayer.saveElements();
+                    DBConnection.sql.getConnection().commit(); //Commit our element change
+                    DBConnection.sql.getConnection().setAutoCommit(true); //Turn autosync back on
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 }
